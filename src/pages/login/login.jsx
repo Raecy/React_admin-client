@@ -3,16 +3,30 @@ import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './login.less'
 import logo from './images/night.png'
+import {reqLogin} from '../../api'
 
 export default class Login extends Component {
-    handleSubmit = () => {
-
-    }
+   
 
     render() {
-        const onFinish = (values) => {
-            console.log('Received values of form: ', values);
+        const onFinish = async (value) => {
+            // console.log('Received values of form: ', values);
+            const {username,password} = value
+            // reqLogin(username,password).then(response => {
+            //     console.log('成功',response.data);
+            // }).catch(error=>{
+            //     console.log('失败',error.message);
+            // })
+           
+            try{
+                const response = await reqLogin(username,password)
+                console.log('成功',response.data);
+            }catch(error){
+                console.log('失败',error.message);
+            }
+            
         };
+        // 自定义表单验证器
         const validatePsw = (_, value) => {
             if (!value) {
                 return Promise.reject(new Error('Please input your Password!'))
@@ -43,11 +57,11 @@ export default class Login extends Component {
                         initialValues={{
                             // remember: true,
                         }}
-                        // onSubmit={this.handleSubmit}
                         onFinish={onFinish}
                     >
                         <Form.Item name="username"
                             rules={[
+                                // 声明式表单验证
                                 {
                                     required: true, message: 'Please input your Username!',
                                 },
@@ -68,9 +82,7 @@ export default class Login extends Component {
                         </Form.Item>
                         <Form.Item name="password"
                             rules={[
-                                // {
-                                //     required: true,message: 'Please input your Password!',
-                                // },
+                                // 自定义表单验证
                                 {
                                     validator: validatePsw,
                                 },
@@ -95,4 +107,16 @@ export default class Login extends Component {
         )
     }
 }
+
+
+
+/**
+ * async 和 await
+ * 1.作用？
+ *      简化promise对象的使用：不用再使用then()来指定成功/失败的回调函数
+ *  以同步编码(没使用回调)方式来实现异步流程
+ * 2.如何使用
+ *      在Promise对象的表达式左侧 写await；不要promise，只要promise异步执行成功的value
+ *      await 所在最近的函数定义的左侧写上 async
+ */
 
