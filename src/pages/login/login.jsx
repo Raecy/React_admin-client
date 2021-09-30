@@ -1,29 +1,55 @@
 import { Component } from 'react'
-import { Form, Input, Button } from 'antd';
+import { Redirect } from 'react-router-dom';
+import { Form, Input, Button,message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './login.less'
 import logo from './images/night.png'
 import {reqLogin} from '../../api'
+import memoryUtils from '../../utils/memoryUtils';
+import storageUtils from '../../utils/storageUtils';
 
 export default class Login extends Component {
    
 
     render() {
-        const onFinish = async (value) => {
+        //如果用户已经登录，跳转admin界面
+        const user = memoryUtils.user
+        if(user._id){
+            return <Redirect to='/' />
+        }
+        const onFinish = async (values) => {
+           
+            const {username,password} = values
+            const result = await reqLogin(username,password)
+            
+
+            if(result.status === 0){
+                message.success('登录成功！')
+                const user = result.data;
+              
+                storageUtils.saveUser(user)
+                this.props.history.replace('/');
+
+            }else{
+                message.error(result.msg)
+            }
             // console.log('Received values of form: ', values);
-            const {username,password} = value
+            // const {username,password} = values
             // reqLogin(username,password).then(response => {
             //     console.log('成功',response.data);
             // }).catch(error=>{
             //     console.log('失败',error.message);
             // })
-           
-            try{
-                const response = await reqLogin(username,password)
-                console.log('成功',response.data);
-            }catch(error){
-                console.log('失败',error.message);
-            }
+            // if(!err){
+            //     const {username,password} = values
+            //     const response = await reqLogin(username,password)
+          
+            //     const result = response.data;
+            // }
+            // else{
+                
+            //     console.log('失败');
+            // }
             
         };
         // 自定义表单验证器

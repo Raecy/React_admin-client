@@ -1,8 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import storageUtils from './utils/storageUtils';
+import memoryUtils from './utils/memoryUtils';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+
+const user = storageUtils.getUser()
+memoryUtils.user = user;
 
 ReactDOM.render(
   // <React.StrictMode>
